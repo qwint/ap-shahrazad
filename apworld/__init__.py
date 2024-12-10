@@ -1,7 +1,31 @@
+from dataclasses import dataclass
+
 from BaseClasses import Item, ItemClassification
-from .options import ShahrazadOptions
-from ..AutoWorld import World, WebWorld
+from Options import OptionList, OptionSet, PerGameCommonOptions, Toggle, Range
+from worlds.AutoWorld import World, WebWorld
 from worlds.generic.Rules import add_rule
+
+
+class Victims(OptionList):
+    """List of players to be locked out of the game."""
+
+
+class AutoHintGameStart(Toggle):
+    """If the Game Start items should be prehinted."""
+
+
+class RandomStartStart(Range):
+    """adds that many random start games to start inventory, for randomizing everything"""
+    range_start = 0
+    range_end = 4
+    default = 0
+
+
+@dataclass
+class ShahrazadOptions(PerGameCommonOptions):
+    victims: Victims
+    hint_game_start: AutoHintGameStart
+    random_start: RandomStartStart
 
 
 class ShahrazadWeb(WebWorld):
