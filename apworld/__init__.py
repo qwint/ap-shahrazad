@@ -127,4 +127,4 @@ class ShahrazadWorld(World):
         for loc in self.multiworld.get_filled_locations(self.player):
             item = loc.item
             self.multiworld.push_precollected(item)
-            loc.item = None
+            loc.item = Item("Nothing", ItemClassification.filler, None, self.player)
