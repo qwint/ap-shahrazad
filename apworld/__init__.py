@@ -2,13 +2,17 @@ from typing import Dict
 from dataclasses import dataclass
 
 from BaseClasses import Item, ItemClassification, Region
-from Options import OptionList, OptionSet, PerGameCommonOptions, Toggle, Range
+from Options import OptionList, OptionSet, PerGameCommonOptions, Toggle, Range, OptionError
 from worlds.AutoWorld import World, WebWorld
 from worlds.generic.Rules import add_rule
 
 
 class Victims(OptionList):
     """List of players to be locked out of the game."""
+
+
+class AllVictims(Toggle):
+    """Overrides Victim list to include all slots in the multiworld (excluding self) instead."""
 
 
 class AutoHintGameStart(Toggle):
@@ -25,6 +29,7 @@ class RandomStartStart(Range):
 @dataclass
 class ShahrazadOptions(PerGameCommonOptions):
     victims: Victims
+    all_victims: AllVictims
     hint_game_start: AutoHintGameStart
     random_start: RandomStartStart
 
@@ -51,6 +56,11 @@ class ShahrazadWorld(World):
     item_pool_names: Dict[int, str]
 
     def generate_early(self):
+        if self.options.all_victims:
+            if not self.options.random_start:
+                raise OptionError("All Victims cannot be used with random_start = 0")
+            self.options.victims.value = [name for slot, name in self.multiworld.player_name.items() if slot != self.player]
+
         self.item_pool_names = {}
         for player in self.multiworld.player_ids:
             if self.multiworld.player_name[player] in self.options.victims.value:
