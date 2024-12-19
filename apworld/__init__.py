@@ -126,5 +126,9 @@ class ShahrazadWorld(World):
         # start inventory our locations because we can't actually check them
         for loc in self.multiworld.get_filled_locations(self.player):
             item = loc.item
+
+            item.location = None
+            loc.item = None
             self.multiworld.push_precollected(item)
-            loc.item = Item("Nothing", ItemClassification.filler, None, self.player)
+
+            loc.place_locked_item(Item("Nothing", ItemClassification.filler, None, self.player))
